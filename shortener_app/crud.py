@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from . import keygen, models, schemas
 
 def create_db_url(db : Session, url: schemas.URLBase) -> models.URL:
-    key = keygen.create_nique_key(db)
+    key = keygen.create_unique_key(db)
     secret_key = f"{key}_{keygen.create_random_key(length=8)}"
     
     db_url = models.URL(
