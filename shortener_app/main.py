@@ -50,6 +50,7 @@ def forward_to_target_url(
     db: Session = Depends(get_db)
 ):
     if db_url := crud.get_db_url_by_key(db, url_key):
+        crud.update_clicks(db, db_url)
         return RedirectResponse(db_url.target_url)
     else:
         raise_not_found(request)
@@ -71,5 +72,13 @@ def create_url(url: schemas.URLBase, db: Session = Depends(get_db)):
 def get_url_info(secret_key: str, request: Request, db: Session = Depends(get_db)):
     if db_url := crud.get_db_url_by_secret_key(db, secret_key):
         return get_admin_info(db_url)
+    else:
+        raise_not_found(request)
+        
+@app.delete("/admin/{secret_key}")
+def delete_url(secret_key: str, request: Request, db: Session = Depends(get_db)):
+    if db_url := crud.get_db_url_by_secret_key(db, secret_key):
+        crud.delete_db_url(db, db_url)
+        return {"message": f"URL {db_url.target_url} has been deleted successfully!"}
     else:
         raise_not_found(request)

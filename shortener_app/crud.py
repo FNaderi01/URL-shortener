@@ -30,3 +30,11 @@ def get_db_url_by_secret_key(db: Session, secret_key: str) -> models.URL:
         .filter(models.URL.secret_key == secret_key, models.URL.is_active == True)
         .first()
     )
+
+def update_clicks(db: Session, db_url: models.URL):
+    db_url.clicks += 1
+    db.commit()
+
+def delete_db_url(db: Session, db_url: models.URL) :
+    db_url.is_active = False
+    db.commit()
