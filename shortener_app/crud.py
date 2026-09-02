@@ -23,3 +23,10 @@ def get_db_url_by_key(db: Session, key: str) -> models.URL:
         .filter(models.URL.key == key, models.URL.is_active == True)
         .first()
     )
+    
+def get_db_url_by_secret_key(db: Session, secret_key: str) -> models.URL:
+    return (
+        db.query(models.URL)
+        .filter(models.URL.secret_key == secret_key, models.URL.is_active == True)
+        .first()
+    )
