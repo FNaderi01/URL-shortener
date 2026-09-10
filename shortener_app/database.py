@@ -1,18 +1,23 @@
-# shortener_app/database.py
+from collections.abc import AsyncGenerator
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from .config import get_settings
 
-engine = create_engine(
-    get_settings().db_url, connect_args={"check_same_thread" : False}
-)
+engine = create_async_engine(get_settings().db_url)
 
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine
+AsyncSessionLocal = sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autoflush=False,
 )
 
 Base = declarative_base()
 
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as db:
+        yield db
